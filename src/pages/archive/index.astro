@@ -1,18 +1,3 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { formatDate, postUrl } from '../../utils/posts';
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+return Astro.redirect('/archives/', 301);
 ---
-<BaseLayout title="文章归档" description="按时间浏览全部技术文章。">
-  <header class="page-header"><p class="eyebrow">Archive</p><h1>文章归档</h1><p>{posts.length} 篇文章，按发布日期倒序排列。</p></header>
-  <div class="archive-list" data-pagefind-body>
-    {posts.map((post) => (
-      <a class="archive-item" href={postUrl(post)}>
-        <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
-        <h2>{post.data.title}</h2>
-        <span>阅读 ↗</span>
-      </a>
-    ))}
-  </div>
-</BaseLayout>

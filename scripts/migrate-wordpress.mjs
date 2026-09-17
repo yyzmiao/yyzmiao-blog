@@ -122,21 +122,24 @@ for (const post of posts) {
   const title = stripHtml(post.title.rendered);
   const excerpt = stripHtml(post.excerpt.rendered);
   const description = excerpt || markdown.replace(/[`#*_>\[\]()]/g, '').replace(/\s+/g, ' ').slice(0, 150);
+  const published = new Date(withTimezone(post.date));
+  const year = String(published.getFullYear());
+  const month = String(published.getMonth() + 1).padStart(2, '0');
+  const day = String(published.getDate()).padStart(2, '0');
+  const postDir = path.join(CONTENT_DIR, year, month, day);
   const frontmatter = [
     '---',
     `title: ${yaml(title)}`,
     `description: ${yaml(description)}`,
-    `publishedAt: ${yaml(withTimezone(post.date))}`,
-    `updatedAt: ${yaml(withTimezone(post.modified))}`,
-    `slug: ${yaml(slug)}`,
+    `pubDatetime: ${withTimezone(post.date)}`,
+    `modDatetime: ${withTimezone(post.modified)}`,
     `tags: ${yaml(tagsBySlug[slug] ?? ['技术笔记'])}`,
     'draft: false',
-    `seoTitle: ${yaml(title)}`,
-    `seoDescription: ${yaml(description)}`,
     '---',
     ''
   ].join('\n');
-  await fs.writeFile(path.join(CONTENT_DIR, `${slug}.md`), `${frontmatter}${markdown}\n`, 'utf8');
+  await fs.mkdir(postDir, { recursive: true });
+  await fs.writeFile(path.join(postDir, `${slug}.md`), `${frontmatter}${markdown}\n`, 'utf8');
   console.log(`Migrated: ${slug}`);
 }
 

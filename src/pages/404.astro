@@ -1,6 +1,35 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
 ---
-<BaseLayout title="页面未找到" description="请求的页面不存在。">
-  <section class="not-found"><div><strong>404</strong><h1>这条路径没有留下记录</h1><p>页面可能被移动，或者链接写错了。</p><a class="button" href="/">返回首页</a></div></section>
-</BaseLayout>
+
+<Layout title={`${t.notFound.title} | ${config.site.title}`}>
+  <Header />
+
+  <main
+    id="main-content"
+    class="app-layout my-1 flex flex-1 items-center justify-center"
+  >
+    <div class="mb-14 flex flex-col items-center justify-center">
+      <h1 class="text-accent text-9xl font-bold">404</h1>
+      <span aria-hidden="true"> ¯\_(ツ)_/¯ </span>
+      <p class="mt-4 text-2xl sm:text-3xl">{t.notFound.message}</p>
+      <LinkButton
+        href={getRelativeLocaleUrl(locale, "")}
+        class="my-6 text-lg underline decoration-dashed underline-offset-8"
+      >
+        {t.notFound.goHome}
+      </LinkButton>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

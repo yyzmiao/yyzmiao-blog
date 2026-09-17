@@ -1,26 +1,35 @@
----
-import { SITE } from '../config/site';
-const ready = Boolean(SITE.giscus.repoId && SITE.giscus.categoryId);
----
-<section class="comments" aria-labelledby="comments-title">
-  <h2 id="comments-title">讨论</h2>
-  {ready ? (
-    <script
-      src="https://giscus.app/client.js"
-      data-repo={SITE.giscus.repo}
-      data-repo-id={SITE.giscus.repoId}
-      data-category={SITE.giscus.category}
-      data-category-id={SITE.giscus.categoryId}
-      data-mapping="pathname"
-      data-strict="0"
-      data-reactions-enabled="1"
-      data-emit-metadata="0"
-      data-input-position="top"
-      data-theme="dark_dimmed"
-      data-lang="zh-CN"
-      crossorigin="anonymous"
-      async></script>
-  ) : (
-    <p class="comments-pending">评论区将在 GitHub Discussions 启用后开放。</p>
-  )}
+<section class="mt-12" aria-labelledby="comments-title">
+  <h2 id="comments-title" class="mb-5 text-2xl font-semibold">评论</h2>
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="yyzmiao/yyzmiao-blog"
+    data-repo-id="R_kgDOUemG3g"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOUemG3s4DFzLN"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async></script>
 </section>
+
+<script>
+  function syncGiscusTheme() {
+    const theme = document.documentElement.dataset.theme === "dark" ? "dark_dimmed" : "light";
+    const iframe = document.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
+    iframe?.contentWindow?.postMessage(
+      { giscus: { setConfig: { theme } } },
+      "https://giscus.app"
+    );
+  }
+
+  document.querySelector("#theme-btn")?.addEventListener("click", () =>
+    requestAnimationFrame(syncGiscusTheme)
+  );
+  document.addEventListener("astro:after-swap", syncGiscusTheme);
+</script>

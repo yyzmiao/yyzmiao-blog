@@ -8,8 +8,8 @@ export const SITE = {
   github: 'https://github.com/yyzmiao/yyzmiao-blog',
   giscus: {
     repo: 'yyzmiao/yyzmiao-blog',
-    repoId: '',
+    repoId: 'R_kgDOUemG3g',
     category: 'Announcements',
-    categoryId: ''
+    categoryId: 'DIC_kwDOUemG3s4DFzLN'
   }
 } as const;

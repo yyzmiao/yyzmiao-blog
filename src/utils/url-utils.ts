@@ -54,6 +54,12 @@ export function getCategoryUrl(category: string | null): string {
 	return url(`/archive/?category=${encodeURIComponent(category.trim())}`);
 }
 
+export function getSubcategoryUrl(category: string, subcategory: string): string {
+	return url(
+		`/archive/?category=${encodeURIComponent(category.trim())}&subcategory=${encodeURIComponent(subcategory.trim())}`,
+	);
+}
+
 export function getDir(path: string): string {
 	// 移除文件扩展名
 	const pathWithoutExt = removeFileExtension(path);

@@ -181,17 +181,35 @@ export type Category = {
 	name: string;
 	count: number;
 	url: string;
+	subcategories: Array<{ name: string; count: number; url: string }>;
 };
 
 export async function getCategoryList(): Promise<Category[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
-	const count: { [key: string]: number } = {};
-	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
+	const { categoryConfig } = await import("@/config/categoryConfig");
+	const { getSubcategoryUrl } = await import("@/utils/url-utils");
+	const groups = new Map<string, Category>();
+	for (const item of categoryConfig) {
+		groups.set(item.name, {
+			name: item.name,
+			count: 0,
+			url: getCategoryUrl(item.name),
+			subcategories: item.subcategories.map((name) => ({
+				name,
+				count: 0,
+				url: getSubcategoryUrl(item.name, name),
+			})),
+		});
+	}
+
+	allBlogPosts.forEach((post: { data: { category: string | null; subcategory: string | null } }) => {
 		if (!post.data.category) {
 			const ucKey = i18n(I18nKey.uncategorized);
-			count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1;
+			const group = groups.get(ucKey) || { name: ucKey, count: 0, url: getCategoryUrl(null), subcategories: [] };
+			group.count += 1;
+			groups.set(ucKey, group);
 			return;
 		}
 
@@ -200,24 +218,25 @@ export async function getCategoryList(): Promise<Category[]> {
 				? post.data.category.trim()
 				: String(post.data.category).trim();
 
-		count[categoryName] = count[categoryName] ? count[categoryName] + 1 : 1;
+		const group = groups.get(categoryName) || {
+			name: categoryName,
+			count: 0,
+			url: getCategoryUrl(categoryName),
+			subcategories: [],
+		};
+		group.count += 1;
+		const subcategoryName = post.data.subcategory?.trim();
+		if (subcategoryName) {
+			let child = group.subcategories.find((item) => item.name === subcategoryName);
+			if (!child) {
+				child = { name: subcategoryName, count: 0, url: getSubcategoryUrl(categoryName, subcategoryName) };
+				group.subcategories.push(child);
+			}
+			child.count += 1;
+		}
+		groups.set(categoryName, group);
 	});
-
-	const lst = Object.keys(count).sort((a, b) => {
-		return (
-			count[b] - count[a] || a.toLowerCase().localeCompare(b.toLowerCase())
-		);
-	});
-
-	const ret: Category[] = [];
-	for (const c of lst) {
-		ret.push({
-			name: c,
-			count: count[c],
-			url: getCategoryUrl(c),
-		});
-	}
-	return ret;
+	return Array.from(groups.values());
 }
 
 /**

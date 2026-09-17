@@ -20,36 +20,33 @@ const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
         </p>
     </div>
 
-    <!-- 分类卡片列表 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+    <!-- 一、二级分类目录 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {
             categories.map((category, index) => (
-                <a
-                    href={category.url}
-                    class="card-base p-6 flex items-center gap-4 group onload-animation"
+                <section
+                    class="card-base p-6 onload-animation"
                     style={`animation-delay: calc(var(--content-delay) + ${index * 50}ms);`}
                 >
-                    <div class="shrink-0 w-14 h-14 rounded-full bg-(--primary)/10 group-hover:bg-(--primary)/20 flex items-center justify-center transition-colors">
-                        <Icon
-                            name="material-symbols:folder-open"
-                            class="text-3xl text-(--primary)"
-                        />
+                    <a href={category.url} class="group flex items-center gap-3 mb-4">
+                        <div class="shrink-0 w-11 h-11 rounded-xl bg-(--primary)/10 group-hover:bg-(--primary)/20 flex items-center justify-center transition-colors">
+                            <Icon name="material-symbols:folder-open" class="text-2xl text-(--primary)" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h2 class="text-lg font-bold text-90 group-hover:text-(--primary) transition-colors">{category.name}</h2>
+                            <p class="text-xs text-30 mt-0.5">{category.count} {i18n(I18nKey.postsCount)}</p>
+                        </div>
+                        <Icon name="material-symbols:chevron-right-rounded" class="text-2xl text-30 group-hover:text-(--primary)" />
+                    </a>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t border-(--line-divider) pt-4">
+                        {category.subcategories.map((child) => (
+                            <a href={child.url} class:list={["group/child flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 bg-(--btn-plain-bg) hover:bg-(--btn-plain-bg-hover) transition-colors", { "opacity-55": child.count === 0 }]}>
+                                <span class="text-sm text-75 group-hover/child:text-(--primary) transition-colors">{child.name}</span>
+                                <span class="text-xs text-30 tabular-nums">{child.count}</span>
+                            </a>
+                        ))}
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <h2 class="text-lg font-bold text-90 truncate group-hover:text-(--primary) transition-colors" title={category.name}>
-                            {category.name}
-                        </h2>
-                        <p class="text-sm text-30 mt-1 group-hover:text-(--primary)/60 transition-colors">
-                            {category.count} {i18n(I18nKey.postsCount)}
-                        </p>
-                    </div>
-                    <div class="shrink-0">
-                        <Icon
-                            name="material-symbols:chevron-right-rounded"
-                            class="text-2xl text-30 group-hover:text-(--primary) transition-colors "
-                        />
-                    </div>
-                </a>
+                </section>
             ))
         }
     </div>

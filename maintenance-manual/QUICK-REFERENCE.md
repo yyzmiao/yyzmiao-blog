@@ -19,7 +19,8 @@ public/uploads/YYYY/MM/image.webp
 ## 分类与标签
 
 ```yaml
-category: "网络"
+category: "技术"
+subcategory: "网络与安全"
 tags: ["DNS", "Clash"]
 ```
 
@@ -43,4 +44,3 @@ src/config/navBarConfig.ts           顶部导航
 src/config/commentConfig.ts          Giscus 评论
 src/config/FooterConfig.html         自定义页脚
 ```
-

@@ -3,7 +3,9 @@ title: "Whisper-Fast-GUI – 本地视频字幕提取"
 description: "Whisper-Fast-GUI：一款为本地语音转写而生的极简桌面工具 背景 OpenAI 开源的 Whisp"
 published: 2026-07-17T09:30:56+08:00
 updated: 2026-08-25T19:17:53+08:00
-tags: ["AI","工具"]
+category: "项目"
+subcategory: "自研项目"
+tags: ["Whisper", "语音识别", "桌面工具"]
 draft: false
 ---
 Whisper-Fast-GUI：一款为本地语音转写而生的极简桌面工具

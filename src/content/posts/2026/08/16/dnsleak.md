@@ -3,7 +3,9 @@ title: "DNS 泄漏与分流配置指南"
 description: "本指南梳理了一套兼顾国内直连解析速度与海外防 DNS 泄漏的客户端 DNS 配置方案。 这里使用clash p"
 published: 2026-08-16T22:10:01+08:00
 updated: 2026-08-25T19:18:29+08:00
-tags: ["网络","DNS"]
+category: "技术"
+subcategory: "网络与安全"
+tags: ["DNS", "Clash", "分流", "隐私保护"]
 draft: false
 ---
 本指南梳理了一套兼顾国内直连解析速度与海外防 DNS 泄漏的客户端 DNS 配置方案。 这里使用clash party逐项设置

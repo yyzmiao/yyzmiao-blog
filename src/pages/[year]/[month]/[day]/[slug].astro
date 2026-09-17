@@ -301,6 +301,7 @@ const seriesData = await getSeriesPosts(entry);
                 published={entry.data.published}
                 updated={entry.data.updated}
                 category={entry.data.category || undefined}
+                subcategory={entry.data.subcategory || undefined}
                 tags={entry.data.tags}
                 id={entry.id}
               />
@@ -390,6 +391,7 @@ const seriesData = await getSeriesPosts(entry);
               updated={entry.data.updated}
               tags={entry.data.tags}
               category={entry.data.category || undefined}
+              subcategory={entry.data.subcategory || undefined}
               id={entry.id}
             />
             {

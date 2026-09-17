@@ -109,6 +109,7 @@ const foldOnFilter = collapseAllButFirst;
               class="archive-post group btn-plain block! h-10 w-full rounded-lg hover:text-[initial]"
               data-tags={JSON.stringify(post.data.tags || [])}
               data-category={post.data.category || ""}
+              data-subcategory={post.data.subcategory || ""}
             >
               <div class="flex flex-row justify-start items-center h-full">
                 {/* date */}
@@ -134,7 +135,7 @@ const foldOnFilter = collapseAllButFirst;
                                  bg-[oklch(0.95_0.025_var(--hue))] dark:bg-[oklch(0.25_0.025_var(--hue))]
                                  text-(--primary) group-hover:bg-(--primary) group-hover:text-white!
                                  transition-colors">
-                      {post.data.category}
+                      {post.data.category}{post.data.subcategory ? ` / ${post.data.subcategory}` : ""}
                     </span>
                   )}
                   <span class="truncate">{post.data.title}</span>
@@ -177,20 +178,21 @@ const foldOnFilter = collapseAllButFirst;
       const params = new URLSearchParams(window.location.search);
       const tags = params.has("tag") ? params.getAll("tag") : [];
       const categories = params.has("category") ? params.getAll("category") : [];
+      const subcategories = params.has("subcategory") ? params.getAll("subcategory") : [];
       const uncategorized = params.get("uncategorized");
 
-      const hasFilter = tags.length > 0 || categories.length > 0 || !!uncategorized;
+      const hasFilter = tags.length > 0 || categories.length > 0 || subcategories.length > 0 || !!uncategorized;
 
       if (hasFilter) {
-        this.applyFilter(tags, categories, !!uncategorized);
-        this.updateBannerTitle(tags, categories, !!uncategorized);
+        this.applyFilter(tags, categories, subcategories, !!uncategorized);
+        this.updateBannerTitle(tags, categories, subcategories, !!uncategorized);
       }
 
       this.bindYearToggles();
     }
 
     // 按筛选条件隐藏不匹配的文章行，重算每年计数，隐藏空年份，重新折叠
-    applyFilter(tags, categories, uncategorized) {
+    applyFilter(tags, categories, subcategories, uncategorized) {
       const foldOnFilter = this.dataset.fold === "true";
       const blocks = Array.from(this.querySelectorAll(".archive-year-block"));
       let totalVisible = 0;
@@ -208,6 +210,7 @@ const foldOnFilter = collapseAllButFirst;
             rowTags = [];
           }
           const rowCategory = row.dataset.category || "";
+          const rowSubcategory = row.dataset.subcategory || "";
 
           let match = true;
           if (tags.length > 0) {
@@ -215,6 +218,9 @@ const foldOnFilter = collapseAllButFirst;
           }
           if (categories.length > 0) {
             match = match && !!rowCategory && categories.includes(rowCategory);
+          }
+          if (subcategories.length > 0) {
+            match = match && !!rowSubcategory && subcategories.includes(rowSubcategory);
           }
           if (uncategorized) {
             match = match && !rowCategory;
@@ -248,7 +254,7 @@ const foldOnFilter = collapseAllButFirst;
       });
 
       // 填充并显示筛选头部
-      this.renderFilterHeader(tags, categories, uncategorized, totalVisible);
+      this.renderFilterHeader(tags, categories, subcategories, uncategorized, totalVisible);
     }
 
     setBlockCollapsed(block, collapsed) {
@@ -262,7 +268,7 @@ const foldOnFilter = collapseAllButFirst;
       }
     }
 
-    renderFilterHeader(tags, categories, uncategorized, count) {
+    renderFilterHeader(tags, categories, subcategories, uncategorized, count) {
       const header = this.querySelector("#archive-filter-header");
       if (!header) return;
 
@@ -270,6 +276,8 @@ const foldOnFilter = collapseAllButFirst;
       const filters = [];
       if (categories.length > 0)
         filters.push({ label: i18nStrings.categories, values: categories, isTag: false });
+      if (subcategories.length > 0)
+        filters.push({ label: "二级分类", values: subcategories, isTag: false });
       if (uncategorized)
         filters.push({ label: i18nStrings.categories, values: [i18nStrings.uncategorized], isTag: false });
       if (tags.length > 0)
@@ -316,13 +324,15 @@ const foldOnFilter = collapseAllButFirst;
       header.classList.remove("hidden");
     }
 
-    updateBannerTitle(tags, categories, uncategorized) {
+    updateBannerTitle(tags, categories, subcategories, uncategorized) {
       const bannerTitle = document.querySelector(".banner-page-title-text");
       if (!bannerTitle) return;
 
       let newTitle = "";
       if (categories.length > 0) {
-        newTitle = categories.join(" / ");
+        newTitle = [...categories, ...subcategories].join(" / ");
+      } else if (subcategories.length > 0) {
+        newTitle = subcategories.join(" / ");
       } else if (uncategorized) {
         newTitle = i18nStrings.uncategorized;
       } else if (tags.length > 0) {

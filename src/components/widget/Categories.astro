@@ -1,5 +1,4 @@
 ---
-import ButtonLink from "@/components/common/ButtonLink.astro";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -27,13 +26,31 @@ const isCollapsed = collapseThreshold
 <WidgetLayout name={i18n(I18nKey.categories)} showTitle={showTitle} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
                 class={className} style={style}
 >
-    {categories.map((c) =>
-        <ButtonLink
-            url={c.url}
-            badge={String(c.count)}
-            label={`View all posts in the ${c.name.trim()} category`}
-        >
-            {c.name.trim()}
-        </ButtonLink>
-    )}
+    <div class="category-tree">
+      {categories.map((category) => (
+        <div class="category-group">
+          <a href={category.url} class="category-parent text-75">
+            <span>{category.name}</span><span class="count">{category.count}</span>
+          </a>
+          <div class="category-children">
+            {category.subcategories.map((child) => (
+              <a href={child.url} class:list={["category-child text-50", { empty: child.count === 0 }]}>
+                <span>{child.name}</span><span class="count">{child.count}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
 </WidgetLayout>
+
+<style>
+  .category-group + .category-group { margin-top: .55rem; }
+  .category-parent, .category-child { display:flex; align-items:center; justify-content:space-between; border-radius:.5rem; transition:color .2s, background-color .2s; }
+  .category-parent { padding:.45rem .55rem; font-weight:700; background:var(--btn-plain-bg); }
+  .category-child { margin-left:.7rem; padding:.3rem .55rem .3rem 1rem; font-size:.82rem; position:relative; }
+  .category-child::before { content:""; position:absolute; left:.35rem; width:.35rem; height:1px; background:currentColor; opacity:.4; }
+  .category-parent:hover, .category-child:hover { color:var(--primary); background:var(--btn-plain-bg-hover); }
+  .category-child.empty { opacity:.55; }
+  .count { font-size:.72rem; opacity:.7; font-variant-numeric:tabular-nums; }
+</style>

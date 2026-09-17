@@ -3,7 +3,8 @@ title: "在这里填写文章标题"
 description: "在这里填写一到两句话的文章摘要，用于首页、搜索结果和 SEO。"
 published: 2026-09-18T12:00:00+08:00
 updated: 2026-09-18T12:00:00+08:00
-category: "网络"
+category: "技术"
+subcategory: "网络与安全"
 tags: ["教程", "示例标签"]
 image: "/uploads/2026/09/cover.webp"
 draft: true
@@ -63,4 +64,3 @@ command --option
 ## 参考资料
 
 - [参考链接名称](https://example.com/)
-

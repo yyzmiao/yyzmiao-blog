@@ -3,7 +3,9 @@ title: "ip纯净度分析方法"
 description: "要全面且准确地检测一个节点的质量（尤其是用于 AI 服务如 Gemini / ChatGPT / Claude"
 published: 2026-08-19T17:46:34+08:00
 updated: 2026-08-25T19:16:39+08:00
-tags: ["网络","IP"]
+category: "技术"
+subcategory: "网络与安全"
+tags: ["IP 检测", "代理节点", "风控", "网络检测"]
 draft: false
 ---
 要全面且准确地检测一个节点的质量（尤其是用于 **AI 服务如 Gemini / ChatGPT / Claude、流媒体、日常防风控**），不能只看“测速快不快”或“Ping 低不低”。

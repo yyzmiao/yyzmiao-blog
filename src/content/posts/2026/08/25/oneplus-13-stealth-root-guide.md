@@ -3,7 +3,9 @@ title: "一加 13 过初阶完美root环境教程"
 description: "该方案可过春秋Native check-Eros 4.2 一、Root 方案选择 二、内核编译与刷入 1.编译"
 published: 2026-08-25T18:44:36+08:00
 updated: 2026-08-25T19:27:28+08:00
-tags: ["Android","Root"]
+category: "技术"
+subcategory: "移动设备"
+tags: ["一加 13", "Root", "KernelSU", "SUSFS"]
 draft: false
 ---
 ###### *该方案可过春秋Native check-Ero**s 4.2***  

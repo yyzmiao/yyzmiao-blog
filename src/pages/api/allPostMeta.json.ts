@@ -10,6 +10,7 @@ export async function GET(): Promise<Response> {
 			description: post.data.description,
 			published: post.data.published.getTime(),
 			category: post.data.category || "",
+			subcategory: post.data.subcategory || "",
 			password: !!post.data.password,
 		}))
 		// 日历按纯日期排序，忽略置顶

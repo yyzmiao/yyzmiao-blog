@@ -18,6 +18,7 @@ interface Props {
 	updated?: Date;
 	tags: string[];
 	category: string | null;
+	subcategory: string | null;
 	image: string;
 	description: string;
 	draft: boolean;
@@ -33,6 +34,7 @@ const {
 	published,
 	tags,
 	category,
+	subcategory,
 	image,
 	description,
 	pinned,
@@ -154,6 +156,7 @@ const minutes = remarkPluginFrontmatter.minutes;
       showNoTags={true}
       hideUpdateDate={true}
       category={category || undefined}
+      subcategory={subcategory || undefined}
       pinned={pinned}
       words={words}
       minutes={minutes}

@@ -4,12 +4,13 @@ import { commentConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
-import { getCategoryUrl, getTagUrl } from "@/utils/url-utils";
+import { getCategoryUrl, getSubcategoryUrl, getTagUrl } from "@/utils/url-utils";
 
 export interface Props {
 	published: Date;
 	updated?: Date;
 	category?: string;
+	subcategory?: string;
 	tags?: string[];
 	hideUpdateDate?: boolean;
 	hideTagsForMobile?: boolean;
@@ -35,6 +36,7 @@ const {
 	published,
 	updated,
 	category,
+	subcategory,
 	tags,
 	hideUpdateDate,
 	hideTagsForMobile,
@@ -130,6 +132,18 @@ const visibleTags =
           >
             {category || i18n(I18nKey.uncategorized)}
           </a>
+          {category && subcategory && (
+            <>
+              <span class="mx-1.5 text-30 text-sm">/</span>
+              <a
+                href={getSubcategoryUrl(category, subcategory)}
+                aria-label={`View all posts in the ${subcategory} subcategory`}
+                class="link-lg transition text-50 text-sm font-medium hover:text-(--primary) whitespace-nowrap"
+              >
+                {subcategory}
+              </a>
+            </>
+          )}
         </div>
       </div>
     )

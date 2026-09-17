@@ -12,9 +12,10 @@ release="$base/releases/$release_id"
 next_link="$base/current.next"
 
 test -f "$archive"
-test ! -e "$release"
-mkdir -p "$release"
-tar -xzf "$archive" -C "$release"
+if [ ! -d "$release" ]; then
+  mkdir -p "$release"
+  tar -xzf "$archive" -C "$release"
+fi
 test -f "$release/index.html"
 test -f "$release/rss.xml"
 test -f "$release/sitemap-index.xml"

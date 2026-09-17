@@ -2,7 +2,7 @@
 title: "Gemini in Chrome 启用与故障排查：按钮存在却打不开怎么办"
 description: "从 chrome://glic/internals 入手，系统排查 Gemini in Chrome 的账号、语言、地区和启动参数问题，并提供 Windows 临时启动与安全回滚方法。"
 published: 2026-09-14T15:34:50+08:00
-updated: 2026-09-18T01:05:00+08:00
+updated: 2026-09-18T01:10:00+08:00
 category: "技术"
 subcategory: "AI 与自动化"
 tags: ["Gemini", "Chrome", "Windows", "故障排查"]
@@ -169,7 +169,7 @@ python .\scripts\gemini_chrome.py status
 5. 将 Chrome 界面区域设置为 `en-US`。
 6. 将 Profile 接受语言设置为 `en-US,en`。
 7. 将配置中已经存在的 `is_glic_eligible` 字段设置为 `true`。
-8. 使用诊断参数启动 Chrome。
+8. 创建桌面快捷方式并使用诊断参数启动 Chrome。
 
 默认备份目录为：
 
@@ -178,6 +178,53 @@ python .\scripts\gemini_chrome.py status
 ```
 
 运行前必须保存网页表单、在线文档和正在进行的下载。脚本会强制结束全部 Chrome 进程；普通标签页通常可以恢复，但未提交内容、隐身窗口和进行中的任务无法保证恢复。
+
+### 桌面快捷方式的使用
+
+执行启用操作后，桌面会自动生成：
+
+```text
+Chrome - Gemini US.lnk
+```
+
+快捷方式调用的稳定启动器保存在：
+
+```text
+%LOCALAPPDATA%\GeminiInChromeToolkit\launch_gemini_chrome.cmd
+```
+
+日常使用流程如下：
+
+1. 保存 Chrome 中尚未提交的表单、在线文档和下载任务。
+2. 双击桌面的 `Chrome - Gemini US`。
+3. 启动器强制结束全部 Chrome 进程，并等待进程退出。
+4. Chrome 使用国家覆盖和国家过滤诊断参数重新启动。
+5. 打开 `chrome://version` 检查命令行参数。
+6. 打开 `chrome://glic/internals` 检查账号、语言、地区和服务器状态。
+
+快捷方式必须先结束已有 Chrome 主进程。直接打开带参数的新窗口无法保证参数生效，因为现有主进程可能接管新窗口。
+
+需要单独创建或刷新快捷方式时，执行：
+
+```powershell
+# PowerShell
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1 -Action Shortcut
+
+# Python
+python .\scripts\gemini_chrome.py shortcut
+```
+
+需要删除快捷方式和稳定启动器时，执行：
+
+```powershell
+# PowerShell
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1 -Action RemoveShortcut
+
+# Python
+python .\scripts\gemini_chrome.py remove-shortcut
+```
+
+删除快捷方式不会删除配置备份，也不会恢复 Chrome 配置。恢复配置需要单独执行恢复命令。
 
 ### 启动参数
 

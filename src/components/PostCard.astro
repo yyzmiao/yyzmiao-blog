@@ -1,0 +1,15 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, postUrl } from '../utils/posts';
+interface Props { post: CollectionEntry<'posts'>; featured?: boolean; }
+const { post, featured = false } = Astro.props;
+---
+<article class:list={['post-card', { featured }]}>
+  <div class="post-card-meta">
+    <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+    {post.data.tags[0] && <span>{post.data.tags[0]}</span>}
+  </div>
+  <h2><a href={postUrl(post)}>{post.data.title}</a></h2>
+  <p>{post.data.description}</p>
+  <a class="read-link" href={postUrl(post)} aria-label={`阅读 ${post.data.title}`}>阅读全文 <span>↗</span></a>
+</article>

@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+
+release_id="${1:-}"
+case "$release_id" in
+  *[!0-9a-f]*|'') echo "Invalid release id" >&2; exit 2 ;;
+esac
+
+base='/var/www/yyzmiao-blog'
+archive="$base/incoming/$release_id.tar.gz"
+release="$base/releases/$release_id"
+next_link="$base/current.next"
+
+test -f "$archive"
+test ! -e "$release"
+mkdir -p "$release"
+tar -xzf "$archive" -C "$release"
+test -f "$release/index.html"
+test -f "$release/rss.xml"
+test -f "$release/sitemap-index.xml"
+test -f "$release/2026/08/25/oneplus-13-stealth-root-guide/index.html"
+
+ln -s "releases/$release_id" "$next_link"
+mv -Tf "$next_link" "$base/current"
+rm -f "$archive"
+
+find "$base/releases" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' \
+  | sort -rn \
+  | awk 'NR > 5 { sub(/^[^ ]+ /, ""); print }' \
+  | while IFS= read -r old_release; do rm -rf -- "$old_release"; done
+
+echo "Activated $release_id"

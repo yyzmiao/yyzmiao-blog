@@ -1,0 +1,35 @@
+---
+import { SITE } from '../config/site';
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: '首页' },
+  { href: '/archive/', label: '归档' },
+  { href: '/tags/', label: '标签' },
+  { href: '/search/', label: '搜索' },
+  { href: '/about/', label: '关于' }
+];
+---
+<header class="site-header">
+  <a class="brand" href="/" aria-label={`${SITE.title}首页`}>
+    <span class="brand-mark" aria-hidden="true">Y</span>
+    <span>{SITE.shortTitle}</span>
+  </a>
+  <nav aria-label="主导航">
+    {links.map((link) => (
+      <a href={link.href} aria-current={path === link.href ? 'page' : undefined}>{link.label}</a>
+    ))}
+  </nav>
+  <button class="theme-toggle" type="button" aria-label="切换深浅色" title="切换深浅色">
+    <span class="theme-icon" aria-hidden="true">◐</span>
+  </button>
+</header>
+
+<script is:inline>
+  const button = document.querySelector('.theme-toggle');
+  button?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+</script>

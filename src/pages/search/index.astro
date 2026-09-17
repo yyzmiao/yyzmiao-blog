@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="搜索" description="搜索站内全部技术文章。">
+  <header class="page-header"><p class="eyebrow">Search</p><h1>搜索文章</h1><p>输入关键词，检索标题与正文内容。</p></header>
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <div id="search" class="search-wrap"></div>
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) new window.PagefindUI({ element: '#search', showSubResults: true, resetStyles: false });
+    });
+  </script>
+</BaseLayout>

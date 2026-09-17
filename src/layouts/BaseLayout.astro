@@ -1,0 +1,74 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../config/site';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+}
+const {
+  title = SITE.title,
+  description = SITE.description,
+  canonical = Astro.url.pathname,
+  type = 'website',
+  publishedAt,
+  updatedAt
+} = Astro.props;
+const fullTitle = title === SITE.title ? title : `${title} · ${SITE.shortTitle}`;
+const canonicalUrl = new URL(canonical, SITE.url).toString();
+const schema = type === 'article' ? {
+  '@context': 'https://schema.org', '@type': 'BlogPosting',
+  headline: title, description, url: canonicalUrl,
+  datePublished: publishedAt?.toISOString(), dateModified: (updatedAt ?? publishedAt)?.toISOString(),
+  author: { '@type': 'Person', name: SITE.author },
+  publisher: { '@type': 'Person', name: SITE.author }
+} : {
+  '@context': 'https://schema.org', '@type': 'WebSite',
+  name: SITE.title, description: SITE.description, url: SITE.url,
+  inLanguage: SITE.locale
+};
+---
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#080b12" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <title>{fullTitle}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script is:inline>
+      (() => {
+        const saved = localStorage.getItem('theme');
+        const preferred = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.dataset.theme = saved || preferred;
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <Header />
+      <main><slot /></main>
+      <Footer />
+    </div>
+  </body>
+</html>

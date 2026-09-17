@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.sites-runtime/
+.env
+*.log
+*.key
+*.tar.gz

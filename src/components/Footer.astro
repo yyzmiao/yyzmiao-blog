@@ -1,0 +1,10 @@
+---
+import { SITE } from '../config/site';
+---
+<footer class="site-footer">
+  <p>© {new Date().getFullYear()} {SITE.author} · Built with Astro</p>
+  <div>
+    <a href="/rss.xml">RSS</a>
+    <a href={SITE.github} rel="me">GitHub</a>
+  </div>
+</footer>

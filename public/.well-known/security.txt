@@ -1,0 +1,3 @@
+Contact: https://github.com/yyzmiao
+Preferred-Languages: zh-CN, en
+Canonical: https://yyzmiao.top/.well-known/security.txt

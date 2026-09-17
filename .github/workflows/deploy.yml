@@ -1,0 +1,64 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and index site
+        run: npm run build
+
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Package site
+        run: tar -C dist -czf "${GITHUB_SHA}.tar.gz" .
+
+      - name: Upload release
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          USER: ${{ secrets.DEPLOY_USER }}
+        run: scp -i ~/.ssh/deploy_key -P "$PORT" "${GITHUB_SHA}.tar.gz" "$USER@$HOST:/var/www/yyzmiao-blog/incoming/"
+
+      - name: Activate release
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          USER: ${{ secrets.DEPLOY_USER }}
+        run: ssh -i ~/.ssh/deploy_key -p "$PORT" "$USER@$HOST" "/usr/local/bin/deploy-yyzmiao '$GITHUB_SHA'"
+
+      - name: Verify production
+        run: curl --fail --silent --show-error --retry 3 --retry-delay 2 https://yyzmiao.top/ > /dev/null

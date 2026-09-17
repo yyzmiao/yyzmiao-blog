@@ -1,0 +1,26 @@
+---
+import { SITE } from '../config/site';
+const ready = Boolean(SITE.giscus.repoId && SITE.giscus.categoryId);
+---
+<section class="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">讨论</h2>
+  {ready ? (
+    <script
+      src="https://giscus.app/client.js"
+      data-repo={SITE.giscus.repo}
+      data-repo-id={SITE.giscus.repoId}
+      data-category={SITE.giscus.category}
+      data-category-id={SITE.giscus.categoryId}
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="dark_dimmed"
+      data-lang="zh-CN"
+      crossorigin="anonymous"
+      async></script>
+  ) : (
+    <p class="comments-pending">评论区将在 GitHub Discussions 启用后开放。</p>
+  )}
+</section>

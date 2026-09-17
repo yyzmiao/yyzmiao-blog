@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE } from '../config/site';
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+<BaseLayout>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Notes from the edge</p>
+      <h1>把复杂问题，<br/><span>拆成清晰路径。</span></h1>
+      <p class="hero-copy">{SITE.description} 这里保存可复现的过程、踩坑后的结论，以及下一次还能用上的答案。</p>
+    </div>
+    <aside class="hero-panel" aria-label="站点状态">
+      <code>~/yyzmiao/blog</code>
+      <strong>{posts.length.toString().padStart(2, '0')}</strong>
+      <p>篇公开技术笔记，持续更新中。</p>
+    </aside>
+  </section>
+  <section aria-labelledby="latest-heading">
+    <div class="section-heading">
+      <div><p class="eyebrow">Latest writing</p><h2 id="latest-heading">最近更新</h2></div>
+      <a href="/archive/">查看全部 →</a>
+    </div>
+    <div class="post-grid" data-pagefind-body>
+      {posts.slice(0, 6).map((post, index) => <PostCard post={post} featured={index === 0} />)}
+    </div>
+  </section>
+</BaseLayout>

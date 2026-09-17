@@ -1,8 +1,8 @@
 ---
 title: "ip纯净度分析方法"
 description: "要全面且准确地检测一个节点的质量（尤其是用于 AI 服务如 Gemini / ChatGPT / Claude"
-pubDatetime: 2026-08-19T17:46:34+08:00
-modDatetime: 2026-08-25T19:16:39+08:00
+published: 2026-08-19T17:46:34+08:00
+updated: 2026-08-25T19:16:39+08:00
 tags: ["网络","IP"]
 draft: false
 ---

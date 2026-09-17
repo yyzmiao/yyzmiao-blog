@@ -1,36 +1,39 @@
 ---
+
 import { getEntry, render } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Breadcrumb from "@/components/Breadcrumb.astro";
-import Main from "@/components/Main.astro";
-import Footer from "@/components/Footer.astro";
-import config from "@/config";
+import Markdown from "@components/common/Markdown.astro";
+import { profileConfig } from "@/config/profileConfig";
+import { siteConfig } from "@/config/siteConfig";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getAuthorAvatarUrl } from "@/utils/schema-image";
+import { buildProfilePage } from "@/utils/schema-utils";
 
-const about = await getEntry("pages", "about");
+const aboutPost = await getEntry("spec", "about");
 
-if (!about) {
-  throw new Error(
-    "Missing content entry: `about.md` or `about.mdx` in `src/content/pages/`"
-  );
+if (!aboutPost) {
+	throw new Error("About page content not found");
 }
 
-const { Content } = await render(about);
+const { Content } = await render(aboutPost);
+
+const avatarUrl = await getAuthorAvatarUrl();
+const jsonLd = buildProfilePage({
+	site: siteConfig.site_url,
+	profileConfig,
+	authorUrl: Astro.url.toString(),
+	avatarUrl,
+	description: profileConfig.bio,
+});
 ---
-
-<Layout
-  title={`${about.data.title} | ${config.site.title}`}
-  description={about.data.description}
-  ogImage={about.data.ogImage}
-  canonicalURL={about.data.canonicalURL}
->
-  <Header />
-
-  <Breadcrumb />
-
-  <Main pageTitle={about.data.title} class="app-prose">
-    <Content />
-  </Main>
-
-  <Footer />
-</Layout>
+<MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
+    <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+        <div class="card-base z-10 px-9 py-6 relative w-full ">
+            <Markdown class="mt-2">
+                <Content />
+            </Markdown>
+        </div>
+    </div>
+</MainGridLayout>

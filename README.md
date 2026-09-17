@@ -1,12 +1,12 @@
 # 一叶梓喵的小站
 
-基于 [AstroPaper 6](https://github.com/satnaing/astro-paper) 的静态中文技术博客，内容由 Markdown 管理并自动部署到 `yyzmiao.top`。
+基于 [Astro](https://astro.build/) 与 [Firefly](https://github.com/CuteLeaf/Firefly) 的静态中文技术博客，内容由 Markdown 管理并自动部署到 `yyzmiao.top`。
 
 ## 本地开发
 
 ```bash
-npm install
-npm run dev
+corepack pnpm install
+corepack pnpm dev
 ```
 
 ## 写一篇文章
@@ -17,29 +17,29 @@ npm run dev
 ---
 title: "文章标题"
 description: "文章摘要"
-pubDatetime: 2026-09-17T12:00:00+08:00
-modDatetime: 2026-09-17T12:00:00+08:00
+published: 2026-09-17T12:00:00+08:00
+updated: 2026-09-17T12:00:00+08:00
 tags: ["标签"]
+category: "分类"
 draft: false
 ---
 ```
 
-推送到 `main` 分支后，GitHub Actions 会执行检查、构建、生成 Pagefind 搜索索引，并原子部署到服务器。
-
-## 必需的 Actions Secrets
-
-- `DEPLOY_HOST`：服务器地址
-- `DEPLOY_PORT`：SSH 端口
-- `DEPLOY_USER`：受限部署用户
-- `DEPLOY_SSH_KEY`：部署私钥
-- `DEPLOY_KNOWN_HOSTS`：服务器 SSH host key
+文章会发布到 `/2026/09/17/article-slug/`。推送到 `main` 后，GitHub Actions 将完成检查、构建、Pagefind 索引和原子部署。
 
 ## 常用命令
 
-- `npm run check`：类型与内容校验
-- `npm run build`：生成完整静态站和搜索索引
-- `npm run migrate:wordpress`：重新从旧 WordPress API 导入文章
+- `pnpm check`：检查 Astro 内容和组件
+- `pnpm type-check`：执行 TypeScript 类型检查
+- `pnpm build`：构建完整静态站和搜索索引
+- `pnpm preview`：预览生产构建
 
-## 主题
+## 部署 Secrets
 
-展示层使用 AstroPaper 6.1.0，并保留其 MIT 许可证于 `LICENSE-AstroPaper`。站点只在主题提供的配置入口、中文文案、旧 URL 兼容与 Giscus 评论位置上做适配。
+- `DEPLOY_HOST`
+- `DEPLOY_PORT`
+- `DEPLOY_USER`
+- `DEPLOY_SSH_KEY`
+- `DEPLOY_KNOWN_HOSTS`
+
+站点主题保留 Firefly 原项目许可证，服务器凭证不进入仓库。

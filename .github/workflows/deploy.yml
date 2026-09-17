@@ -20,17 +20,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.22.0
+
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build and index site
-        run: npm run build
+        run: pnpm check && pnpm type-check && pnpm build
 
       - name: Configure SSH
         env:

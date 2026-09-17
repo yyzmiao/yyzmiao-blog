@@ -2,7 +2,7 @@
 title: "Gemini in Chrome 启用与故障排查：按钮存在却打不开怎么办"
 description: "从 chrome://glic/internals 入手，系统排查 Gemini in Chrome 的账号、语言、地区和启动参数问题，并提供 Windows 临时启动与安全回滚方法。"
 published: 2026-09-14T15:34:50+08:00
-updated: 2026-09-17T21:55:00+08:00
+updated: 2026-09-18T01:05:00+08:00
 category: "技术"
 subcategory: "AI 与自动化"
 tags: ["Gemini", "Chrome", "Windows", "故障排查"]
@@ -62,7 +62,7 @@ chrome://glic/internals
 
 ### 一个典型的地区不匹配案例
 
-本次排查中，账号、登录、语言、rollout 和服务器许可均正常，唯一失败项是：
+典型案例中，账号、登录、语言、rollout 和服务器许可均正常，唯一失败项是：
 
 ```text
 Passed country filter: false
@@ -101,63 +101,97 @@ Chrome 的地区判断并不只看当前公网 IP。Variations 服务还可能�
 
 完成后再次查看 `chrome://glic/internals`。如果仍然只有 `Passed country filter` 失败，再考虑下面的临时诊断方案。
 
-## 五、用启动参数进行临时验证
+## 五、使用一键配置与恢复工具
 
-Chromium 提供了 `--variations-override-country` 参数，用于测试 Variations 在不同国家条件下的行为。针对地区过滤问题，可以临时使用：
+[Gemini in Chrome Toolkit](https://github.com/yyzmiao/gemini-in-chrome-toolkit) 提供相互独立的 Python 和 PowerShell 脚本，用于备份配置、写入地区与语言设置、使用诊断参数启动 Chrome，以及从备份恢复原始配置。
+
+工具不会删除注册表策略，也不会绕过 Chrome 企业管理策略。账号资格、服务器许可和 rollout 仍由 Google 或组织管理员控制。
+
+### PowerShell 方式
+
+安装 PowerShell 7.4 或更高版本，下载仓库后在项目目录执行：
+
+```powershell
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1
+```
+
+交互式菜单提供以下操作：
+
+```text
+1. 启用并启动 Chrome
+2. 恢复最新备份
+3. 查看状态
+0. 退出
+```
+
+也可以直接指定操作：
+
+```powershell
+# 启用、备份并启动 Chrome
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1 -Action Enable
+
+# 恢复最新备份
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1 -Action Restore
+
+# 查看状态
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1 -Action Status
+```
+
+### Python 方式
+
+安装 Python 3.10 或更高版本，下载仓库后在项目目录执行：
+
+```powershell
+python .\scripts\gemini_chrome.py
+```
+
+也可以直接指定操作：
+
+```powershell
+# 启用、备份并启动 Chrome
+python .\scripts\gemini_chrome.py enable
+
+# 恢复最新备份
+python .\scripts\gemini_chrome.py restore
+
+# 查看状态
+python .\scripts\gemini_chrome.py status
+```
+
+### 启用流程
+
+脚本按以下顺序处理配置：
+
+1. 检测 Chrome 安装路径和用户数据目录。
+2. 请求确认并关闭全部 Chrome 进程。
+3. 备份 `Local State` 和全部常规 Profile 的 `Preferences`。
+4. 将 Variations 国家和长期一致性国家设置为 `us`。
+5. 将 Chrome 界面区域设置为 `en-US`。
+6. 将 Profile 接受语言设置为 `en-US,en`。
+7. 将配置中已经存在的 `is_glic_eligible` 字段设置为 `true`。
+8. 使用诊断参数启动 Chrome。
+
+默认备份目录为：
+
+```text
+%USERPROFILE%\Documents\GeminiInChromeToolkit\backups\时间戳
+```
+
+运行前必须保存网页表单、在线文档和正在进行的下载。脚本会强制结束全部 Chrome 进程；普通标签页通常可以恢复，但未提交内容、隐身窗口和进行中的任务无法保证恢复。
+
+### 启动参数
+
+Chromium 提供 `--variations-override-country` 参数，用于测试 Variations 在不同国家条件下的行为。工具使用以下参数启动 Chrome：
 
 ```text
 --variations-override-country=us
 --disable-features=GlicCountryFiltering
 ```
 
-两个参数的作用分别是：
+- `--variations-override-country=us` 将当前启动会话的 Variations 国家覆盖为美国，不会跨会话永久保存。
+- `--disable-features=GlicCountryFiltering` 在当前启动会话中禁用 Gemini in Chrome 的客户端国家过滤。
 
-- `--variations-override-country=us`：本次运行将 Variations 使用的国家覆盖为美国；该设置不会跨会话永久保存。
-- `--disable-features=GlicCountryFiltering`：本次运行禁用 Gemini in Chrome 的客户端国家过滤功能。
-
-它们只适合验证“是否确实卡在地区过滤”，不会给账号增加服务器资格，也不会解决管理员策略、账号能力或 rollout 未开放的问题。
-
-### Windows PowerShell 启动脚本
-
-可以新建 `launch-chrome-gemini-us.ps1`，写入：
-
-```powershell
-$chromeCandidates = @(
-    "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
-    "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
-    "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe"
-)
-
-$chromePath = $chromeCandidates |
-    Where-Object { Test-Path -LiteralPath $_ } |
-    Select-Object -First 1
-
-if (-not $chromePath) {
-    throw "没有找到 Chrome，请检查安装路径。"
-}
-
-# 启动参数只会在新的 Chrome 主进程上生效
-Stop-Process -Name chrome -Force -ErrorAction SilentlyContinue
-
-for ($i = 0; $i -lt 20 -and (Get-Process chrome -ErrorAction SilentlyContinue); $i++) {
-    Start-Sleep -Milliseconds 250
-}
-
-Start-Process -FilePath $chromePath -ArgumentList @(
-    "--variations-override-country=us",
-    "--disable-features=GlicCountryFiltering"
-)
-```
-
-运行前务必保存网页表单、在线文档和正在进行的下载。脚本会强制结束全部 Chrome 进程；普通标签页通常可以恢复，但未提交的页面内容、隐身窗口和进行中的任务可能丢失。
-
-如果 PowerShell 阻止本次脚本运行，可以在普通 PowerShell 窗口中使用：
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\launch-chrome-gemini-us.ps1"
-```
-
-这只为本次进程绕过脚本执行限制，不会永久修改系统执行策略。
+这些参数只能验证问题是否来自地区过滤，不能增加服务器端账号资格，也不能解决管理员策略、账号能力或 rollout 未开放的问题。
 
 ## 六、为什么普通快捷方式经常“没有生效”
 
@@ -206,9 +240,9 @@ chrome://glic/internals
 4. 更新到下一版 Chrome 后重新测试；
 5. 更换为个人 Google 账号，排除组织策略影响。
 
-## 八、不建议直接修改 Chrome 配置文件
+## 八、配置修改与安全边界
 
-一些第三方脚本会编辑 Chrome 用户目录中的 `Local State` 或 `Preferences`，例如写入：
+工具会编辑 Chrome 用户目录中的 `Local State` 和 `Preferences`，主要写入：
 
 ```text
 variations_country = us
@@ -217,13 +251,15 @@ intl.app_locale = en-US
 is_glic_eligible = true
 ```
 
-这种方式存在三个问题：
+Chrome 配置修改存在以下限制：
 
 1. Chrome 联网后会根据账号和服务器状态重新计算资格，本地字段可能被覆盖；
 2. Chrome 运行时修改 JSON 文件，可能造成写入冲突或配置损坏；
 3. `is_glic_eligible = true` 不能替代真实的服务器资格检查。
 
-因此，排障时优先读取 `chrome://glic/internals`，需要验证地区因素时使用一次性启动参数。不要把直接编辑用户配置作为日常开启方式。
+每次启用操作都会先创建独立备份，再采用临时文件替换方式写入 JSON。工具只更新已经存在的 `is_glic_eligible` 字段，不会创建虚假的服务器资格，也不会删除企业策略。
+
+排障时应优先读取 `chrome://glic/internals`。只有在账号、登录、语言和服务器许可已经通过，而地区过滤单独失败时，才适合使用该工具验证地区因素。
 
 ## 九、恢复与撤销
 
@@ -231,13 +267,19 @@ is_glic_eligible = true
 
 完全退出 Chrome，然后从普通快捷方式重新启动即可。上述参数只影响通过诊断脚本启动的那次 Chrome 会话。
 
-### 删除启动器
+### 使用 PowerShell 恢复
 
-删除自己创建的 `.ps1` 和快捷方式即可，不会删除 Chrome、浏览记录或 Google 账号。
+```powershell
+pwsh -NoProfile -File .\scripts\gemini_chrome.ps1 -Action Restore
+```
 
-### 恢复配置备份
+### 使用 Python 恢复
 
-如果此前使用第三方脚本修改过 `Local State` 或 `Preferences`，恢复前应先备份当前配置，并确保 Chrome 已完全退出。旧备份会覆盖后来新增的设置，不应作为常规修复方法。
+```powershell
+python .\scripts\gemini_chrome.py restore
+```
+
+未指定备份时，脚本选择时间戳最新且包含有效清单的备份。恢复操作只覆盖清单中记录的文件，不删除后来新建的 Profile，也不更改扩展、浏览记录、书签或 Google 账号。
 
 ## 十、快速判断表
 
@@ -257,3 +299,4 @@ is_glic_eligible = true
 - [Chromium：Variations 国家覆盖参数](https://chromium.googlesource.com/chromium/src/+/main/components/variations/variations_switches.cc)
 - [Chromium：Gemini in Chrome 启用条件实现](https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/glic/public/glic_enabling.cc)
 - [Chromium：创建 `chrome://glic/internals` 的变更记录](https://chromium.googlesource.com/chromium/src/+/854c23b412aaccb4172d27dc727b5d2891fd02be)
+- [GitHub：Gemini in Chrome Toolkit](https://github.com/yyzmiao/gemini-in-chrome-toolkit)

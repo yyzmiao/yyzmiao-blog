@@ -43,3 +43,7 @@ draft: false
 - `DEPLOY_KNOWN_HOSTS`
 
 站点主题保留 Firefly 原项目许可证，服务器凭证不进入仓库。
+
+## 维护手册
+
+完整的发布、分类、图片与部署维护说明见 [`maintenance-manual/`](maintenance-manual/README.md)。

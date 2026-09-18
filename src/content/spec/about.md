@@ -20,8 +20,8 @@
 
 如果你对文章内容有疑问，或者想一起交流折腾心得，可以通过以下渠道联系我：
 
-- **GitHub**：[@yyzmiao](https://github.com/yyzmiao)
-- **Telegram**：[@yyzmiao](https://t.me/yyzmiao)
+- **GitHub**：<a href="https://github.com/yyzmiao" target="_blank" rel="noopener noreferrer">@yyzmiao</a>
+- **Telegram**：<a href="https://t.me/yyzmiao" target="_blank" rel="noopener noreferrer">@yyzmiao</a>
 
 ---
 

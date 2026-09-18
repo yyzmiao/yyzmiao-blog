@@ -1,5 +1,5 @@
 ---
-title: "Clash 系列客户端 TUN 模式节点全红断连问题的解决方法"
+title: "Clash-TUN 模式 断网百分百强制修复"
 description: "TUN 模式（虚拟网卡模式）是 Clash 系列客户端实现全局透明代理的核心机制，但在部分 Windows 环"
 published: 2026-07-16T23:05:35+08:00
 updated: 2026-08-25T19:03:33+08:00

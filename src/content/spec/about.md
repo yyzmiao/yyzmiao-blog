@@ -2,7 +2,15 @@
 
 你好，我是 **一叶梓喵**。
 
-这里是我的个人技术小站，主要记录网络、系统、Android、AI 以及开源工具相关的实践与折腾笔记。比起泛泛的概念，我更倾向于记录真实问题的排查过程和可以稳定复现的解决方案。
+这里是我的个人数字自留地。没什么条条框框，想到什么就记点什么——可能是一次折腾记录、某个突然冒出来的想法，或是偶然碰到的有趣事物。随缘更新，也希望能对路过的你有所启发。
+
+## 联系方式
+
+如果你对文章内容有疑问，或者想一起交流折腾心得，可以通过以下渠道联系我：
+
+- **GitHub**：<a href="https://github.com/yyzmiao" target="_blank" rel="noopener noreferrer">@yyzmiao</a>
+- **Telegram**：<a href="https://t.me/yyzmiao" target="_blank" rel="noopener noreferrer">@yyzmiao</a>
+
 
 ## 关于本站
 
@@ -16,13 +24,7 @@
 - **CI/CD**：文章以 Markdown 维护，由 GitHub Actions 自动化构建发布
 - **评论系统**：基于 Giscus 与 GitHub Discussions
 
-## 联系方式
-
-如果你对文章内容有疑问，或者想一起交流折腾心得，可以通过以下渠道联系我：
-
-- **GitHub**：<a href="https://github.com/yyzmiao" target="_blank" rel="noopener noreferrer">@yyzmiao</a>
-- **Telegram**：<a href="https://t.me/yyzmiao" target="_blank" rel="noopener noreferrer">@yyzmiao</a>
 
 ---
 
-感谢你的来访，希望这里的记录能帮你少踩一点坑。
+感谢你的来访

@@ -1,5 +1,5 @@
 ---
-title: "Gemini in Chrome 启用与故障排查：按钮存在却打不开怎么办"
+title: "强制找回 Chrome「问问 Gemini」, 启动参数突破地区限制，"
 description: "从 chrome://glic/internals 入手，系统排查 Gemini in Chrome 的账号、语言、地区和启动参数问题，并提供 Windows 临时启动与安全回滚方法。"
 published: 2026-09-14T15:34:50+08:00
 updated: 2026-09-18T01:10:00+08:00
